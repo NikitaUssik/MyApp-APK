@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Task Manager</title>
+    <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * { font-family: Arial, sans-serif; }
+        .container { max-width: 600px; margin: 20px auto; text-align: center; }
+        .note-card { background: #eee; padding: 10px; margin: 10px 0; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; }
+        .note-content { flex-grow: 1; text-align: left; padding: 10px; }
+        .note-actions button { margin-left: 5px; cursor: pointer; padding: 5px; }
+        .note-add { margin: 20px 0; display: flex; gap: 10px; }
+        .note-add input { padding: 5px; flex-grow: 1; }
+        .completed { opacity: 0.5; text-decoration: line-through; }
+    </style>
+</head>
+<body>
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useContext, createContext } = React;
+
+        // Контекст данных
+        const DataContext = createContext();
+
+        function DataProvider({ children }) {
+            const [tasks, setTasks] = useState([
+                { id: 1, content: "HTML is easy", completed: false }
+            ]);
+            return (
+                <DataContext.Provider value={{ tasks, setTasks }}>
+                    {children}
+                </DataContext.Provider>
+            );
+        }
+
+        // Карточка задачи
+        function NoteCard({ task, onEdit, onDelete, onComplete }) {
+            return (
+                <div className={`note-card ${task.completed ? "completed" : ""}`}>
+                    <div className="note-content">{task.content}</div>
+                    <div className="note-actions">
+                        <button onClick={() => onComplete(task.id)}>✔</button>
+                        <button onClick={() => onEdit(task.id)}>✏</button>
+                        <button onClick={() => onDelete(task.id)}>🗑</button>
+                    </div>
+                </div>
+            );
+        }
+
+        // Список задач
+        function NoteList() {
+            const { tasks, setTasks } = useContext(DataContext);
+
+            const handleDelete = (id) => {
+                setTasks(tasks.filter(task => task.id !== id));
+            };
+
+            const handleComplete = (id) => {
+                setTasks(tasks.map(task => task.id === id ? { ...task, completed: !task.completed } : task));
+            };
+
+            return (
+                <div>
+                    {tasks.map(task => (
+                        <NoteCard key={task.id} task={task} onDelete={handleDelete} onComplete={handleComplete} onEdit={() => {}} />
+                    ))}
+                </div>
+            );
+        }
+
+        // Форма добавления задачи
+        function NoteAdd() {
+            const { tasks, setTasks } = useContext(DataContext);
+            const [newNote, setNewNote] = useState("");
+
+            const addTask = () => {
+                if (!newNote.trim()) return;
+                setTasks([...tasks, { id: tasks.length + 1, content: newNote, completed: false }]);
+                setNewNote("");
+            };
+
+            const clearFields = () => setNewNote("");
+
+            return (
+                <div className="note-add">
+                    <input type="text" value={newNote} onChange={(e) => setNewNote(e.target.value)} />
+                    <button onClick={addTask}>Добавить</button>
+                    <button onClick={clearFields}>Очистить</button>
+                </div>
+            );
+        }
+
+        // Главный компонент
+        function App() {
+            return (
+                <DataProvider>
+                    <div className="container">
+                        <h1>React Task Manager</h1>
+                        <NoteAdd />
+                        <NoteList />
+                    </div>
+                </DataProvider>
+            );
+        }
+
+        // Рендеринг React-компонента
+        ReactDOM.render(<App />, document.getElementById("root"));
+    </script>
+
+</body>
+</html>

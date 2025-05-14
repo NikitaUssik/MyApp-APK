@@ -1,0 +1,42 @@
+# Android
+.gradle/
+build/
+*/build/
+*.iml
+local.properties
+*.apk
+*.aab
+captures/
+output.json
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+.pnpm-debug.log
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# JetBrains IDEs
+.idea/
+*.iws
+*.ipr
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+
+# React Native (если используешь)
+ios/build/
+android/app/build/
+*.keystore
